@@ -1,5 +1,5 @@
-from views import input_form
-from handlers import get_stats
+import views.input_form
+import handler.get_stats
 import flask
 
 app = flask.Flask(__name__, static_folder="static")
@@ -9,10 +9,10 @@ app.config.from_object('config')
 @app.route('/', methods=['GET', 'POST'])
 def index():
     """ form for getting input data """
-    data_form = input_form.InputForm()
+    data_form = views.input_form.InputForm()
     global_statistics = ()
     country_statistics = ()
-    getter = get_stats.GetStats()
+    getter = handler.get_stats.GetStats()
     global_statistics = getter.get_global_stats()
     if data_form.validate_on_submit():
         country_statistics = \
@@ -24,5 +24,7 @@ def index():
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
+
+
 
