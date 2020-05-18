@@ -1,5 +1,5 @@
 import requests
-from views import country_id
+import views.country_id
 import json
 import datetime
 
@@ -40,9 +40,8 @@ class GetStats:
 
     @staticmethod
     def get_country_stats(country, date):
-        id_ = country_id.GetCountryId().get_id(country)
+        id_ = views.country_id.GetCountryId().get_id(country)
         statistics = ()
-        print(id_, date)
         try:
             if date == None or date == datetime.date.today():
                 req = requests.get(f"https://api.thevirustracker.com/"
@@ -59,7 +58,6 @@ class GetStats:
                 statistics = \
                     req.json()['timelineitems'][0][f"{date.month}" \
                                                    f"/{day}/{date.year%100}"]
+            return get_needed_stats(statistics, date)
         except (KeyError, ValueError, json.JSONDecodeError) as err:
             return ()
-        else:
-            return get_needed_stats(statistics, date)
