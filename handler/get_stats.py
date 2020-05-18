@@ -50,11 +50,9 @@ class GetStats:
             elif date > datetime.date.today():
                 return ()
             else:
-                print("HERE!")
                 req = requests.get(f"https://api.thevirustracker.com/"
                                    f"free-api?countryTimeline={id_}")
                 day = (date.day < 10) * "0" + str(date.day)
-                print(f"{date.month}/{day}/{date.year%100}")
                 statistics = \
                     req.json()['timelineitems'][0][f"{date.month}" \
                                                    f"/{day}/{date.year%100}"]
