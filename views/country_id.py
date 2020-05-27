@@ -7,7 +7,7 @@ class GetCountryId:
         self.__countries = {}
 
     def get_id(self, country):
-        if country in self.__countries.keys():
+        if country in self.__countries:
             return self.__countries[country]
         try:
             req = requests.get(f"https://restcountries.eu/rest/v2/name/{country}")
