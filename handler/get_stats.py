@@ -4,21 +4,6 @@ import json
 import datetime
 
 
-def prettifier(func):
-    def pretty(stats, date=None):
-        data = func(stats, date)
-        pretty_data = []
-        for number in data:
-            pretty = ""
-            almost_pr = str(number)
-            for i in range(-1, -len(almost_pr)-3, -3):
-                pretty += almost_pr[i:i-3:-1] + " "
-            pretty_data.append(pretty[::-1])
-        return pretty_data
-    return pretty
-
-
-@prettifier
 def get_needed_stats(stats, date=None):
     if date:
         return stats['total_cases'], stats['total_recoveries'], \
@@ -35,8 +20,11 @@ class GetStats:
     def get_global_stats():
         req = requests.get("https://api.thevirustracker.com/"
                            "free-api?global=stats")
-        statistics = req.json()['results'][0]
-        return get_needed_stats(statistics)
+        try:
+            statistics = req.json()['results'][0]
+            return get_needed_stats(statistics)
+        except json.JSONDecodeError:
+            return None
 
     @staticmethod
     def get_country_stats(country, date):
@@ -48,7 +36,7 @@ class GetStats:
                                    f"free-api?countryTotal={id_}")
                 statistics = req.json()['countrydata'][0]
             elif date > datetime.date.today():
-                return ()
+                return None
             else:
                 req = requests.get(f"https://api.thevirustracker.com/"
                                    f"free-api?countryTimeline={id_}")
@@ -58,4 +46,4 @@ class GetStats:
                                                    f"/{day}/{date.year%100}"]
             return get_needed_stats(statistics, date)
         except (KeyError, ValueError, json.JSONDecodeError) as err:
-            return ()
+            return None
