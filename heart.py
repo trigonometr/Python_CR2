@@ -18,7 +18,6 @@ def index():
         country_statistics = \
             getter.get_country_stats(data_form.country_name.data,
                                      data_form.date.data)
-        print(country_statistics)
     return flask.render_template('index.html', gl_st=global_statistics,
                                  cntry_st=country_statistics, form=data_form,
                                  country = data_form.country_name.data)
