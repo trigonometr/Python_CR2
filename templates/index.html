@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js"></script>
+</head>
+<body>
+    <header>    Coronavirus Information service    </header>
+    <h1>Total confirmed: {{ gl_st[0] }}</h1>
+    <h2>Total recovered: {{ gl_st[1] }}</h2>
+    <h2>Deaths: {{ gl_st[2] }}</h2>
+    <h2>New cases today: {{ gl_st[3] }}</h2>
+    <h2>Deaths today: {{ gl_st[4] }}</h2>
+
+    <div class="container">
+        <canvas id="globalChart" width="20" height="4"></canvas>
+    </div>
+    <script>
+        let globalChart = document.getElementById('globalChart').getContext('2d');
+        let confirmed = parseInt('{{gl_st[0]}}'), deaths = parseInt('{{gl_st[2]}}'), recovered = parseInt('{{gl_st[1]}}');
+
+        Chart.defaults.global.defaultFontFamily = 'Noto Sans';
+        Chart.defaults.global.defaultFontSize = 18;
+        let covidChart = new Chart(globalChart, {
+            type: 'bar',
+            data:{
+                labels:['Confirmed', 'Deaths', 'Recovered'],
+                datasets:[{
+                    label:'People',
+                    data:[confirmed, deaths, recovered],
+                    backgroundColor: [
+                    'rgba(255, 24, 0, 0.8)',
+                    'rgba(84, 82, 91, 0.8)',
+                    'rgba(106, 68, 255, 0.8)'
+                    ]
+                }]
+            },
+            options: {
+                legend:{
+                    display: false
+                }
+            }
+        });
+    </script>
+
+    <form action="" method="post">
+
+        {{ form.hidden_tag() }}
+
+        {% for element in form %}
+            {% if element.widget.input_type != 'hidden' and element.name != 'submit'%}
+                {{ element.label }} {{ element() }} <br>
+            {% endif %}
+            {% if element.name == 'submit' %}
+                {{ element() }} <br>
+            {% endif %}
+        {% endfor %}
+
+        {% if cntry_st not in (none, ()) %}
+            <h4>Statistics for {{country}}:</h4>
+            <h4>Total cases: {{cntry_st[0]}}</h4>
+            <h4>Total deaths: {{cntry_st[2]}}</h4>
+            <h4>New cases: {{cntry_st[3]}}</h4>
+            <h4>New deaths: {{cntry_st[4]}}</h4>
+            <div class="container">
+                <canvas id="localChart" width="20" height="4"></canvas>
+            </div>
+            <script>
+                let localChart = document.getElementById('localChart').getContext('2d');
+                let l_confirmed = parseInt('{{cntry_st[0]}}');
+                let l_deaths = parseInt('{{cntry_st[2]}}');
+
+                let l_covidChart = new Chart(localChart, {
+                    type: 'bar',
+                    data:{
+                        labels:['Confirmed in the country', 'Deaths in the country'],
+                        datasets:[{
+                            label:'People',
+                            data:[l_confirmed, l_deaths],
+                            backgroundColor: [
+                            'rgba(255, 24, 0, 0.7)',
+                            'rgba(84, 82, 91, 0.7)',
+                            'rgba(0, 0, 0, 0)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        title:{
+                            display: true,
+                            text: 'The country statistics',
+                            fontSize: 24
+                        },
+                        legend:{
+                            display: false
+                        }
+                    }
+                });
+            </script>
+        {% elif cntry_st is none %}
+            <h5>NO INFORMATION FOUND</h5>
+        {% endif %}
+
+
+
+    </form>
+</body>
+</html>
